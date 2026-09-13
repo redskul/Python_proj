@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 — Security on AWS · SAP on AWS — Learning</title>
+<meta name="description" content="A hands-on curriculum for learning SAP on AWS: AWS fundamentals, SAP fundamentals, and SAP-on-AWS architecture, with Terraform labs and Python automation.">
+<style>
+:root{--bg:#ffffff;--fg:#1f2933;--muted:#647084;--border:#e4e8ef;--card:#f7f9fc;
+--accent:#ff9900;--accent2:#232f3e;--link:#0b6bcb;--code-bg:#f2f4f8;--code-fg:#1f2933;
+--sidebar-bg:#fafbfd;--th-bg:#eef1f6;}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e7ebf1;--muted:#98a2b3;--border:#2a3140;
+--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;--link:#6cb6ff;--code-bg:#1c2230;
+--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e7ebf1;
+--muted:#98a2b3;--border:#2a3140;--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;
+--link:#6cb6ff;--code-bg:#1c2230;--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,
+"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+height:54px;padding:0 16px;background:var(--accent2);color:#fff;border-bottom:1px solid var(--border)}
+.brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand span{color:var(--accent);font-weight:700}
+.menu-btn,.theme-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+border-radius:8px;height:34px;min-width:38px;cursor:pointer;font-size:16px}
+.theme-btn{margin-left:auto}
+.menu-btn{display:none}
+.layout{display:flex;align-items:flex-start;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:54px;align-self:flex-start;width:290px;flex:0 0 290px;
+height:calc(100vh - 54px);overflow-y:auto;background:var(--sidebar-bg);
+border-right:1px solid var(--border);padding:18px 14px}
+.nav-section{margin-bottom:16px}
+.nav-section-title{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+color:var(--muted);font-weight:700;margin:0 0 6px 8px}
+.sidebar-nav ul{list-style:none;margin:0;padding:0}
+.sidebar-nav li a{display:block;padding:5px 8px;border-radius:7px;color:var(--fg);font-size:13.5px}
+.sidebar-nav li a:hover{background:var(--card);text-decoration:none}
+.sidebar-nav li a.active{background:var(--accent);color:#231f00;font-weight:600}
+.sidebar-foot{margin-top:20px;padding:10px 8px 0;border-top:1px solid var(--border);
+color:var(--muted);font-size:11.5px}
+.content{flex:1 1 auto;min-width:0;padding:28px 34px 60px}
+.markdown-body{max-width:820px}
+.markdown-body h1{font-size:30px;line-height:1.2;margin:.2em 0 .6em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.markdown-body h2{font-size:22px;margin:1.6em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.markdown-body h3{font-size:17px;margin:1.3em 0 .4em}
+.markdown-body p,.markdown-body li{color:var(--fg)}
+.markdown-body code{background:var(--code-bg);color:var(--code-fg);padding:.15em .4em;
+border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.markdown-body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+padding:14px 16px;overflow-x:auto}
+.markdown-body pre code{background:transparent;padding:0;font-size:13px;line-height:1.55}
+.markdown-body blockquote{margin:1em 0;padding:.5em 1em;border-left:4px solid var(--accent);
+background:var(--card);border-radius:0 8px 8px 0;color:var(--fg)}
+.markdown-body table{border-collapse:collapse;width:100%;margin:1.1em 0;display:block;overflow-x:auto}
+.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:8px 11px;text-align:left;font-size:13.5px}
+.markdown-body th{background:var(--th-bg);font-weight:700}
+.markdown-body details{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:10px 14px;margin:1em 0}
+.markdown-body summary{cursor:pointer;font-weight:600}
+.markdown-body hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.markdown-body img{max-width:100%}
+.page-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--muted);font-size:12.5px}
+@media (max-width:860px){
+ .menu-btn{display:inline-block}
+ .sidebar{position:fixed;top:54px;left:0;z-index:15;transform:translateX(-100%);
+  transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .sidebar.open{transform:translateX(0)}
+ .content{padding:20px 18px 50px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+  <a class="brand" href="../index.html">SAP&nbsp;on&nbsp;AWS <span>Learning</span></a>
+  <button id="themeBtn" class="theme-btn" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+<div class="nav-section"><span class="nav-section-title">Overview</span><ul>
+<li><a href="../index.html">Overview</a></li>
+<li><a href="../DEPLOY.html">Deploying the site to Vercel</a></li>
+<li><a href="../glossary.html">Glossary — SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">0 · Getting Started</span><ul>
+<li><a href="../00-getting-started/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">1 · AWS Fundamentals</span><ul>
+<li><a href="../01-aws-fundamentals/README.html">Introduction</a></li>
+<li><a href="../01-aws-fundamentals/01-cloud-concepts.html">Cloud Concepts &amp; Global Infrastructure</a></li>
+<li><a href="../01-aws-fundamentals/02-iam.html">IAM: Identity &amp; Access Management</a></li>
+<li><a href="../01-aws-fundamentals/03-vpc-networking.html">VPC &amp; Networking</a></li>
+<li><a href="../01-aws-fundamentals/04-ec2-compute.html">EC2: Elastic Compute Cloud</a></li>
+<li><a href="../01-aws-fundamentals/05-storage.html">Storage: EBS, EFS, FSx, S3</a></li>
+<li><a href="../01-aws-fundamentals/06-databases.html">Databases on AWS (and where SAP HANA fits)</a></li>
+<li><a href="../01-aws-fundamentals/07-monitoring-and-management.html">Monitoring &amp; Management</a></li>
+<li><a href="../01-aws-fundamentals/08-security.html" class="active">Security on AWS</a></li>
+<li><a href="../01-aws-fundamentals/09-resiliency-ha-dr.html">Resiliency: High Availability &amp; Disaster Recovery</a></li>
+<li><a href="../01-aws-fundamentals/10-cost-and-billing.html">Cost &amp; Billing</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">2 · SAP Fundamentals</span><ul>
+<li><a href="../02-sap-fundamentals/README.html">Introduction</a></li>
+<li><a href="../02-sap-fundamentals/01-what-is-sap.html">What is SAP?</a></li>
+<li><a href="../02-sap-fundamentals/02-sap-architecture.html">SAP Architecture (NetWeaver &amp; the 3 tiers)</a></li>
+<li><a href="../02-sap-fundamentals/03-sap-hana.html">SAP HANA</a></li>
+<li><a href="../02-sap-fundamentals/04-s4hana-and-products.html">S/4HANA &amp; the Product Families</a></li>
+<li><a href="../02-sap-fundamentals/05-sap-landscape-and-lifecycle.html">SAP System Landscapes &amp; Lifecycle</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">3 · SAP on AWS</span><ul>
+<li><a href="../03-sap-on-aws/README.html">Introduction</a></li>
+<li><a href="../03-sap-on-aws/01-reference-architecture.html">SAP on AWS Reference Architecture</a></li>
+<li><a href="../03-sap-on-aws/02-compute-and-sizing.html">Compute &amp; Sizing for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/03-storage.html">Storage for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/04-networking.html">Networking for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/05-high-availability-and-dr.html">High Availability &amp; Disaster Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/06-backup-and-recovery.html">Backup &amp; Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/07-migration.html">Migrating SAP to AWS</a></li>
+<li><a href="../03-sap-on-aws/08-automation-launch-wizard.html">Automation: Launch Wizard &amp; Infrastructure as Code</a></li>
+<li><a href="../03-sap-on-aws/09-operations-and-security.html">Operations &amp; Security for SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Labs</span><ul>
+<li><a href="../labs/README.html">Introduction</a></li>
+<li><a href="../labs/lab01-vpc-foundation/README.html">Introduction</a></li>
+<li><a href="../labs/lab02-ec2-bastion/README.html">Introduction</a></li>
+<li><a href="../labs/lab03-hana-host/README.html">Introduction</a></li>
+<li><a href="../labs/lab04-ha-overview/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Automation</span><ul>
+<li><a href="../automation/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Exercises</span><ul>
+<li><a href="../exercises/capstone-solution-sketch.html">Capstone — worked solution sketch</a></li>
+<li><a href="../exercises/quiz-aws-fundamentals.html">Quiz — AWS Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-fundamentals.html">Quiz — SAP Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-on-aws.html">Quiz — SAP on AWS</a></li>
+<li><a href="../exercises/study-plan.html">Study Plan</a></li>
+</ul></div>
+</nav>
+    <div class="sidebar-foot">Educational material · not affiliated with SAP or AWS</div>
+  </aside>
+  <main class="content">
+    <article class="markdown-body">
+      <h1 id="08-security-on-aws">08 — Security on AWS</h1>
+<p>Security is job zero, especially for business-critical SAP data (finance, HR, IP).</p>
+<h2 id="the-shared-responsibility-model">The Shared Responsibility Model</h2>
+<ul>
+<li><strong>AWS secures the cloud</strong>: physical data centres, hardware, hypervisor, managed
+  service software.</li>
+<li><strong>You secure what's in the cloud</strong>: OS patching, SAP kernel patching, IAM,
+  network config, encryption choices, and your data.</li>
+</ul>
+<p>For <strong>SAP on EC2 (IaaS)</strong> you own a <em>lot</em>: the OS, HANA, network rules, and access.</p>
+<h2 id="data-protection-encryption-everywhere">Data protection: encryption everywhere</h2>
+<ul>
+<li><strong>At rest</strong>:</li>
+<li><strong>EBS encryption</strong> (KMS) — enable <strong>encryption by default</strong> for the account.</li>
+<li><strong>S3</strong> default encryption (SSE-S3 or SSE-KMS) for HANA backups.</li>
+<li>HANA <strong>data &amp; log volume encryption</strong> (SAP feature) can layer on top.</li>
+<li><strong>In transit</strong>:</li>
+<li><strong>TLS</strong> for Fiori/Web Dispatcher (443).</li>
+<li><strong>SNC (Secure Network Communications)</strong> for SAP GUI/RFC.</li>
+<li>IPsec for VPN / private DX for the transport itself.</li>
+</ul>
+<h2 id="kms-key-management-service">KMS (Key Management Service)</h2>
+<ul>
+<li>Central place to create and control <strong>encryption keys</strong>.</li>
+<li><strong>AWS-managed keys</strong> (easy) vs <strong>customer-managed keys</strong> (CMK — you control rotation,
+  policy, who can use them). Production SAP usually uses <strong>CMKs</strong> so key access is
+  auditable and separable from data access.</li>
+<li>Key policies + IAM decide who can <code>Encrypt</code>/<code>Decrypt</code>. Combine with grants for the
+  HANA Backint role.</li>
+<li><strong>CloudHSM</strong> for dedicated hardware key custody (regulatory needs).</li>
+</ul>
+<h2 id="secrets-manager-parameter-store">Secrets Manager &amp; Parameter Store</h2>
+<ul>
+<li><strong>Secrets Manager</strong>: store &amp; <strong>auto-rotate</strong> DB passwords, HANA <code>SYSTEM</code> user creds,
+  service accounts. The SAP host fetches them at runtime via its IAM role — no
+  passwords in scripts.</li>
+<li><strong>SSM Parameter Store</strong>: config values (and SecureString secrets, cheaper, no auto-rotation).</li>
+</ul>
+<h2 id="network-security-recap-see-module-03">Network security recap (see module 03)</h2>
+<ul>
+<li>SAP servers in <strong>private subnets</strong>.</li>
+<li><strong>Security groups</strong> scoped to specific source SGs (app-tier SG → db-tier SG on the
+  HANA SQL port), never <code>0.0.0.0/0</code>.</li>
+<li><strong>VPC endpoints</strong> so backup/monitoring traffic to S3/KMS/SSM stays on the AWS backbone.</li>
+<li><strong>NACLs</strong> as a coarse subnet-level backstop.</li>
+</ul>
+<h2 id="detection-governance">Detection &amp; governance</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GuardDuty</strong></td>
+<td>Threat detection from logs (crypto-mining, anomalous API calls)</td>
+</tr>
+<tr>
+<td><strong>Security Hub</strong></td>
+<td>Aggregates findings, checks against CIS/AWS best-practice standards</td>
+</tr>
+<tr>
+<td><strong>AWS Config</strong></td>
+<td>Compliance rules ("EBS must be encrypted", "no public SG on port 22")</td>
+</tr>
+<tr>
+<td><strong>CloudTrail</strong></td>
+<td>Immutable audit log of API calls (turn on log-file validation)</td>
+</tr>
+<tr>
+<td><strong>IAM Access Analyzer</strong></td>
+<td>Finds overly broad resource sharing</td>
+</tr>
+<tr>
+<td><strong>Inspector</strong></td>
+<td>Scans EC2/containers for CVEs — patch your SAP OS</td>
+</tr>
+<tr>
+<td><strong>Macie</strong></td>
+<td>Finds sensitive data (PII) in S3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="practical-sap-security-checklist">Practical SAP security checklist</h2>
+<ul>
+<li>[ ] Root user locked, MFA on all humans.</li>
+<li>[ ] IAM roles (not keys) on every SAP EC2 host; <strong>IMDSv2 enforced</strong>.</li>
+<li>[ ] EBS + S3 encrypted with <strong>CMKs</strong>; HANA volume encryption considered.</li>
+<li>[ ] SAP hosts in <strong>private subnets</strong>; SSH via <strong>SSM Session Manager</strong>.</li>
+<li>[ ] Security groups least-privilege between tiers.</li>
+<li>[ ] Secrets in <strong>Secrets Manager</strong>, not in files.</li>
+<li>[ ] CloudTrail + Config + GuardDuty enabled org-wide.</li>
+<li>[ ] OS/kernel patched via <strong>SSM Patch Manager</strong>; SAP Notes applied.</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Under the shared responsibility model, who patches the SLES/RHEL OS of a HANA
+   EC2 host?</li>
+<li>Why prefer a <strong>customer-managed KMS key (CMK)</strong> over an AWS-managed key for SAP
+   backups?</li>
+<li>Where should the HANA <code>SYSTEM</code> password live, and how does the host get it safely?</li>
+<li>Name the AWS service that would flag "an EC2 instance is talking to a known
+   crypto-mining domain."</li>
+</ol>
+<details><summary>Answers</summary>
+
+1. **You** — the OS is your responsibility on IaaS (use SSM Patch Manager + SAP Notes).
+2. You control rotation, policy, and auditing, and can separate key-use permission from
+   data-access permission.
+3. In **Secrets Manager**; the host retrieves it at runtime via its **IAM role**, so no
+   plaintext secret sits on disk.
+4. **GuardDuty**.
+</details>
+    </article>
+    <footer class="page-foot">
+      <span>SAP on AWS learning project</span>
+    </footer>
+  </main>
+</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ try{var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+ var tb=document.getElementById('themeBtn');
+ if(tb)tb.addEventListener('click',function(){
+   var cur=root.getAttribute('data-theme');
+   var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+   root.setAttribute('data-theme',next);
+   try{localStorage.setItem('theme',next);}catch(e){}
+ });
+ var mb=document.getElementById('menuBtn'),sb=document.getElementById('sidebar');
+ if(mb&&sb)mb.addEventListener('click',function(){sb.classList.toggle('open');});
+ document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+   a.addEventListener('click',function(){if(sb)sb.classList.remove('open');});
+ });
+})();
+</script>
+</body>
+</html>

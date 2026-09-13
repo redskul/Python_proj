@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 — SAP Architecture (NetWeaver &amp; the 3 tiers) · SAP on AWS — Learning</title>
+<meta name="description" content="A hands-on curriculum for learning SAP on AWS: AWS fundamentals, SAP fundamentals, and SAP-on-AWS architecture, with Terraform labs and Python automation.">
+<style>
+:root{--bg:#ffffff;--fg:#1f2933;--muted:#647084;--border:#e4e8ef;--card:#f7f9fc;
+--accent:#ff9900;--accent2:#232f3e;--link:#0b6bcb;--code-bg:#f2f4f8;--code-fg:#1f2933;
+--sidebar-bg:#fafbfd;--th-bg:#eef1f6;}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e7ebf1;--muted:#98a2b3;--border:#2a3140;
+--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;--link:#6cb6ff;--code-bg:#1c2230;
+--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e7ebf1;
+--muted:#98a2b3;--border:#2a3140;--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;
+--link:#6cb6ff;--code-bg:#1c2230;--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,
+"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+height:54px;padding:0 16px;background:var(--accent2);color:#fff;border-bottom:1px solid var(--border)}
+.brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand span{color:var(--accent);font-weight:700}
+.menu-btn,.theme-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+border-radius:8px;height:34px;min-width:38px;cursor:pointer;font-size:16px}
+.theme-btn{margin-left:auto}
+.menu-btn{display:none}
+.layout{display:flex;align-items:flex-start;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:54px;align-self:flex-start;width:290px;flex:0 0 290px;
+height:calc(100vh - 54px);overflow-y:auto;background:var(--sidebar-bg);
+border-right:1px solid var(--border);padding:18px 14px}
+.nav-section{margin-bottom:16px}
+.nav-section-title{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+color:var(--muted);font-weight:700;margin:0 0 6px 8px}
+.sidebar-nav ul{list-style:none;margin:0;padding:0}
+.sidebar-nav li a{display:block;padding:5px 8px;border-radius:7px;color:var(--fg);font-size:13.5px}
+.sidebar-nav li a:hover{background:var(--card);text-decoration:none}
+.sidebar-nav li a.active{background:var(--accent);color:#231f00;font-weight:600}
+.sidebar-foot{margin-top:20px;padding:10px 8px 0;border-top:1px solid var(--border);
+color:var(--muted);font-size:11.5px}
+.content{flex:1 1 auto;min-width:0;padding:28px 34px 60px}
+.markdown-body{max-width:820px}
+.markdown-body h1{font-size:30px;line-height:1.2;margin:.2em 0 .6em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.markdown-body h2{font-size:22px;margin:1.6em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.markdown-body h3{font-size:17px;margin:1.3em 0 .4em}
+.markdown-body p,.markdown-body li{color:var(--fg)}
+.markdown-body code{background:var(--code-bg);color:var(--code-fg);padding:.15em .4em;
+border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.markdown-body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+padding:14px 16px;overflow-x:auto}
+.markdown-body pre code{background:transparent;padding:0;font-size:13px;line-height:1.55}
+.markdown-body blockquote{margin:1em 0;padding:.5em 1em;border-left:4px solid var(--accent);
+background:var(--card);border-radius:0 8px 8px 0;color:var(--fg)}
+.markdown-body table{border-collapse:collapse;width:100%;margin:1.1em 0;display:block;overflow-x:auto}
+.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:8px 11px;text-align:left;font-size:13.5px}
+.markdown-body th{background:var(--th-bg);font-weight:700}
+.markdown-body details{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:10px 14px;margin:1em 0}
+.markdown-body summary{cursor:pointer;font-weight:600}
+.markdown-body hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.markdown-body img{max-width:100%}
+.page-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--muted);font-size:12.5px}
+@media (max-width:860px){
+ .menu-btn{display:inline-block}
+ .sidebar{position:fixed;top:54px;left:0;z-index:15;transform:translateX(-100%);
+  transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .sidebar.open{transform:translateX(0)}
+ .content{padding:20px 18px 50px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+  <a class="brand" href="../index.html">SAP&nbsp;on&nbsp;AWS <span>Learning</span></a>
+  <button id="themeBtn" class="theme-btn" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+<div class="nav-section"><span class="nav-section-title">Overview</span><ul>
+<li><a href="../index.html">Overview</a></li>
+<li><a href="../DEPLOY.html">Deploying the site to Vercel</a></li>
+<li><a href="../glossary.html">Glossary — SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">0 · Getting Started</span><ul>
+<li><a href="../00-getting-started/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">1 · AWS Fundamentals</span><ul>
+<li><a href="../01-aws-fundamentals/README.html">Introduction</a></li>
+<li><a href="../01-aws-fundamentals/01-cloud-concepts.html">Cloud Concepts &amp; Global Infrastructure</a></li>
+<li><a href="../01-aws-fundamentals/02-iam.html">IAM: Identity &amp; Access Management</a></li>
+<li><a href="../01-aws-fundamentals/03-vpc-networking.html">VPC &amp; Networking</a></li>
+<li><a href="../01-aws-fundamentals/04-ec2-compute.html">EC2: Elastic Compute Cloud</a></li>
+<li><a href="../01-aws-fundamentals/05-storage.html">Storage: EBS, EFS, FSx, S3</a></li>
+<li><a href="../01-aws-fundamentals/06-databases.html">Databases on AWS (and where SAP HANA fits)</a></li>
+<li><a href="../01-aws-fundamentals/07-monitoring-and-management.html">Monitoring &amp; Management</a></li>
+<li><a href="../01-aws-fundamentals/08-security.html">Security on AWS</a></li>
+<li><a href="../01-aws-fundamentals/09-resiliency-ha-dr.html">Resiliency: High Availability &amp; Disaster Recovery</a></li>
+<li><a href="../01-aws-fundamentals/10-cost-and-billing.html">Cost &amp; Billing</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">2 · SAP Fundamentals</span><ul>
+<li><a href="../02-sap-fundamentals/README.html">Introduction</a></li>
+<li><a href="../02-sap-fundamentals/01-what-is-sap.html">What is SAP?</a></li>
+<li><a href="../02-sap-fundamentals/02-sap-architecture.html" class="active">SAP Architecture (NetWeaver &amp; the 3 tiers)</a></li>
+<li><a href="../02-sap-fundamentals/03-sap-hana.html">SAP HANA</a></li>
+<li><a href="../02-sap-fundamentals/04-s4hana-and-products.html">S/4HANA &amp; the Product Families</a></li>
+<li><a href="../02-sap-fundamentals/05-sap-landscape-and-lifecycle.html">SAP System Landscapes &amp; Lifecycle</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">3 · SAP on AWS</span><ul>
+<li><a href="../03-sap-on-aws/README.html">Introduction</a></li>
+<li><a href="../03-sap-on-aws/01-reference-architecture.html">SAP on AWS Reference Architecture</a></li>
+<li><a href="../03-sap-on-aws/02-compute-and-sizing.html">Compute &amp; Sizing for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/03-storage.html">Storage for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/04-networking.html">Networking for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/05-high-availability-and-dr.html">High Availability &amp; Disaster Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/06-backup-and-recovery.html">Backup &amp; Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/07-migration.html">Migrating SAP to AWS</a></li>
+<li><a href="../03-sap-on-aws/08-automation-launch-wizard.html">Automation: Launch Wizard &amp; Infrastructure as Code</a></li>
+<li><a href="../03-sap-on-aws/09-operations-and-security.html">Operations &amp; Security for SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Labs</span><ul>
+<li><a href="../labs/README.html">Introduction</a></li>
+<li><a href="../labs/lab01-vpc-foundation/README.html">Introduction</a></li>
+<li><a href="../labs/lab02-ec2-bastion/README.html">Introduction</a></li>
+<li><a href="../labs/lab03-hana-host/README.html">Introduction</a></li>
+<li><a href="../labs/lab04-ha-overview/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Automation</span><ul>
+<li><a href="../automation/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Exercises</span><ul>
+<li><a href="../exercises/capstone-solution-sketch.html">Capstone — worked solution sketch</a></li>
+<li><a href="../exercises/quiz-aws-fundamentals.html">Quiz — AWS Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-fundamentals.html">Quiz — SAP Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-on-aws.html">Quiz — SAP on AWS</a></li>
+<li><a href="../exercises/study-plan.html">Study Plan</a></li>
+</ul></div>
+</nav>
+    <div class="sidebar-foot">Educational material · not affiliated with SAP or AWS</div>
+  </aside>
+  <main class="content">
+    <article class="markdown-body">
+      <h1 id="02-sap-architecture-netweaver-the-3-tiers">02 — SAP Architecture (NetWeaver &amp; the 3 tiers)</h1>
+<p>To run SAP on AWS you must know what the pieces <em>are</em>, because each maps to specific
+EC2 instances, storage, and network rules.</p>
+<h2 id="the-classic-3-tier-architecture">The classic 3-tier architecture</h2>
+<pre><code>   Presentation tier      →   Application tier        →   Database tier
+   (SAP GUI / Fiori /          (SAP kernel: ABAP           (HANA or AnyDB)
+    browser)                    &amp;/or Java work
+                                processes)
+</code></pre>
+<ol>
+<li><strong>Presentation tier</strong> — the user's client: <strong>SAP GUI</strong> (thick client) or <strong>Fiori</strong>
+   (browser). Lives on user laptops; on AWS you mainly worry about <em>reaching</em> it with
+   low latency (Direct Connect / VPN).</li>
+<li><strong>Application tier</strong> — the <strong>SAP kernel</strong> running work processes that execute
+   business logic (ABAP programs, or Java). Scales <strong>horizontally</strong>: multiple
+   application server instances. On AWS = multiple EC2 instances.</li>
+<li><strong>Database tier</strong> — persists everything. <strong>HANA</strong> (strategic) or an AnyDB. On AWS =
+   EC2 (self-managed).</li>
+</ol>
+<h2 id="key-components-of-a-netweaver-abap-system">Key components of a NetWeaver ABAP system</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+<th>AWS/HA note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>(A)SCS</strong> — ABAP SAP Central Services</td>
+<td>Holds the <strong>Message Server</strong> (load balancing/logon) and <strong>Enqueue Server</strong> (lock management).</td>
+<td><strong>Single point of failure</strong> → must be clustered (ENSA2 + Pacemaker across AZs).</td>
+</tr>
+<tr>
+<td><strong>PAS</strong> — Primary Application Server</td>
+<td>The first/central app server instance.</td>
+<td>EC2 in a private subnet.</td>
+</tr>
+<tr>
+<td><strong>AAS</strong> — Additional Application Server(s)</td>
+<td>Extra dialog instances for scale/HA.</td>
+<td>More EC2, across AZs.</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>HANA / AnyDB.</td>
+<td>Its own EC2 + storage + HA.</td>
+</tr>
+<tr>
+<td><strong>SAP Web Dispatcher</strong></td>
+<td>Reverse proxy / load balancer for HTTP(S)/Fiori.</td>
+<td>Behind an AWS ALB.</td>
+</tr>
+<tr>
+<td><strong><code>/sapmnt</code></strong></td>
+<td>Shared SAP directory (profiles, kernel, global data).</td>
+<td>Shared FS: <strong>EFS</strong> or <strong>FSx</strong>.</td>
+</tr>
+<tr>
+<td><strong><code>/usr/sap/trans</code></strong></td>
+<td>Transport directory shared across the landscape.</td>
+<td>Shared FS.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="work-processes-what-the-app-tier-actually-does">Work processes (what the app tier actually does)</h3>
+<p>The kernel runs typed work processes: <strong>Dialog</strong> (interactive), <strong>Background</strong> (batch
+jobs), <strong>Update</strong>, <strong>Enqueue</strong>, <strong>Spool</strong>, <strong>Message</strong>. Sizing (how many of each) drives
+the CPU/memory you need — which drives the EC2 instance type.</p>
+<h2 id="ensa1-vs-ensa2-matters-for-aws-ha">ENSA1 vs ENSA2 (matters for AWS HA)</h2>
+<p>The <strong>Enqueue Server</strong> guards SAP locks. Old <strong>ENSA1</strong> required the enqueue replication
+server on the <em>same</em> node, constraining failover. <strong>ENSA2 (Standalone Enqueue Server
+2)</strong> decouples this so the enqueue can fail over to <strong>any</strong> node — which is what makes
+clean <strong>multi-AZ Pacemaker clusters on AWS</strong> possible. Modern S/4HANA uses ENSA2.</p>
+<h2 id="abap-vs-java-stacks">ABAP vs Java stacks</h2>
+<ul>
+<li><strong>ABAP stack</strong>: the traditional and most common (ECC, S/4HANA, BW).</li>
+<li><strong>Java stack</strong> (AS Java): used by some products (older Portal, PI/PO). Different
+  central-services naming (<strong>SCS</strong> vs <strong>ASCS</strong>), but the same architectural ideas.</li>
+<li>Some older systems were <strong>dual-stack</strong>; SAP has since split them.</li>
+</ul>
+<h2 id="saps-the-unit-of-sap-compute">SAPS — the unit of SAP compute</h2>
+<p><strong>SAPS (SAP Application Performance Standard)</strong> is a hardware-independent measure of
+throughput (derived from a standard SD benchmark; 100 SAPS ≈ 2,000 order line items/hr).
+You size a system in <strong>SAPS</strong>, then pick an EC2 instance certified to deliver that many
+SAPS. This is the bridge between "business load" and "AWS instance choice" — see
+<code>03-sap-on-aws/02-compute-and-sizing.md</code> and the calculator in <code>automation/</code>.</p>
+<h2 id="how-this-maps-onto-an-aws-deployment-preview">How this maps onto an AWS deployment (preview)</h2>
+<pre><code>ALB (443) ─▶ Web Dispatcher (EC2)
+                 │
+     ┌───────────┴───────────┐
+   PAS (EC2, AZ-a)        AAS (EC2, AZ-b)          ← app tier, private subnets
+     └───────────┬───────────┘
+        ASCS cluster (EC2 AZ-a ⇄ AZ-b, Pacemaker, overlay IP)   ← central services
+                 │
+        HANA primary (EC2, AZ-a)  ⇄  HANA secondary (EC2, AZ-b)  ← DB tier, HSR sync
+        shared /sapmnt, /usr/sap/trans  → EFS/FSx
+        backups → S3 (Backint)
+</code></pre>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Name the three tiers and which one scales horizontally.</li>
+<li>Why is the <strong>(A)SCS</strong> the single point of failure, and what modern feature makes
+   multi-AZ failover clean?</li>
+<li>What is <strong>SAPS</strong> and why do you care about it on AWS?</li>
+<li>Which shared directories typically live on <strong>EFS/FSx</strong> rather than EBS, and why?</li>
+</ol>
+<details><summary>Answers</summary>
+
+1. Presentation, application, database. The **application** tier scales horizontally.
+2. It hosts the single **enqueue** (lock) and message servers; **ENSA2** lets the
+   enqueue fail over to any node, enabling clean multi-AZ Pacemaker clusters.
+3. A hardware-independent throughput unit; you size in SAPS and pick an EC2 instance
+   certified for that many SAPS.
+4. **`/sapmnt`** and **`/usr/sap/trans`** — they must be shared by many app servers
+   across AZs, which needs a multi-attach file system (EFS/FSx), not single-AZ EBS.
+</details>
+    </article>
+    <footer class="page-foot">
+      <span>SAP on AWS learning project</span>
+    </footer>
+  </main>
+</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ try{var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+ var tb=document.getElementById('themeBtn');
+ if(tb)tb.addEventListener('click',function(){
+   var cur=root.getAttribute('data-theme');
+   var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+   root.setAttribute('data-theme',next);
+   try{localStorage.setItem('theme',next);}catch(e){}
+ });
+ var mb=document.getElementById('menuBtn'),sb=document.getElementById('sidebar');
+ if(mb&&sb)mb.addEventListener('click',function(){sb.classList.toggle('open');});
+ document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+   a.addEventListener('click',function(){if(sb)sb.classList.remove('open');});
+ });
+})();
+</script>
+</body>
+</html>

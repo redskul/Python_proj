@@ -6,6 +6,10 @@ first (the same ground as the *AWS Certified Solutions Architect – Associate*)
 SAP fundamentals, and finally the specialised knowledge that maps to the
 **AWS Certified: SAP on AWS – Specialty (PAS-C01)** exam.
 
+> 🌐 **Read it as a website:** the whole curriculum renders to a static site (sidebar
+> nav, light/dark theme) that deploys to **Vercel** with no build step. See
+> [`DEPLOY.md`](DEPLOY.md). Regenerate locally with `pip install markdown && python site/build.py`.
+
 > This is a **learning** repo. It mixes reading material, quizzes, runnable Python
 > (boto3) automation, and Infrastructure-as-Code (Terraform) labs. Everything is
 > designed to be run in a *personal* AWS account inside the Free Tier where possible.

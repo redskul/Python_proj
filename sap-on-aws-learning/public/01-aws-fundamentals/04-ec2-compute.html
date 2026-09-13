@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 — EC2: Elastic Compute Cloud · SAP on AWS — Learning</title>
+<meta name="description" content="A hands-on curriculum for learning SAP on AWS: AWS fundamentals, SAP fundamentals, and SAP-on-AWS architecture, with Terraform labs and Python automation.">
+<style>
+:root{--bg:#ffffff;--fg:#1f2933;--muted:#647084;--border:#e4e8ef;--card:#f7f9fc;
+--accent:#ff9900;--accent2:#232f3e;--link:#0b6bcb;--code-bg:#f2f4f8;--code-fg:#1f2933;
+--sidebar-bg:#fafbfd;--th-bg:#eef1f6;}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e7ebf1;--muted:#98a2b3;--border:#2a3140;
+--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;--link:#6cb6ff;--code-bg:#1c2230;
+--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e7ebf1;
+--muted:#98a2b3;--border:#2a3140;--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;
+--link:#6cb6ff;--code-bg:#1c2230;--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,
+"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+height:54px;padding:0 16px;background:var(--accent2);color:#fff;border-bottom:1px solid var(--border)}
+.brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand span{color:var(--accent);font-weight:700}
+.menu-btn,.theme-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+border-radius:8px;height:34px;min-width:38px;cursor:pointer;font-size:16px}
+.theme-btn{margin-left:auto}
+.menu-btn{display:none}
+.layout{display:flex;align-items:flex-start;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:54px;align-self:flex-start;width:290px;flex:0 0 290px;
+height:calc(100vh - 54px);overflow-y:auto;background:var(--sidebar-bg);
+border-right:1px solid var(--border);padding:18px 14px}
+.nav-section{margin-bottom:16px}
+.nav-section-title{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+color:var(--muted);font-weight:700;margin:0 0 6px 8px}
+.sidebar-nav ul{list-style:none;margin:0;padding:0}
+.sidebar-nav li a{display:block;padding:5px 8px;border-radius:7px;color:var(--fg);font-size:13.5px}
+.sidebar-nav li a:hover{background:var(--card);text-decoration:none}
+.sidebar-nav li a.active{background:var(--accent);color:#231f00;font-weight:600}
+.sidebar-foot{margin-top:20px;padding:10px 8px 0;border-top:1px solid var(--border);
+color:var(--muted);font-size:11.5px}
+.content{flex:1 1 auto;min-width:0;padding:28px 34px 60px}
+.markdown-body{max-width:820px}
+.markdown-body h1{font-size:30px;line-height:1.2;margin:.2em 0 .6em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.markdown-body h2{font-size:22px;margin:1.6em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.markdown-body h3{font-size:17px;margin:1.3em 0 .4em}
+.markdown-body p,.markdown-body li{color:var(--fg)}
+.markdown-body code{background:var(--code-bg);color:var(--code-fg);padding:.15em .4em;
+border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.markdown-body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+padding:14px 16px;overflow-x:auto}
+.markdown-body pre code{background:transparent;padding:0;font-size:13px;line-height:1.55}
+.markdown-body blockquote{margin:1em 0;padding:.5em 1em;border-left:4px solid var(--accent);
+background:var(--card);border-radius:0 8px 8px 0;color:var(--fg)}
+.markdown-body table{border-collapse:collapse;width:100%;margin:1.1em 0;display:block;overflow-x:auto}
+.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:8px 11px;text-align:left;font-size:13.5px}
+.markdown-body th{background:var(--th-bg);font-weight:700}
+.markdown-body details{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:10px 14px;margin:1em 0}
+.markdown-body summary{cursor:pointer;font-weight:600}
+.markdown-body hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.markdown-body img{max-width:100%}
+.page-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--muted);font-size:12.5px}
+@media (max-width:860px){
+ .menu-btn{display:inline-block}
+ .sidebar{position:fixed;top:54px;left:0;z-index:15;transform:translateX(-100%);
+  transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .sidebar.open{transform:translateX(0)}
+ .content{padding:20px 18px 50px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+  <a class="brand" href="../index.html">SAP&nbsp;on&nbsp;AWS <span>Learning</span></a>
+  <button id="themeBtn" class="theme-btn" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+<div class="nav-section"><span class="nav-section-title">Overview</span><ul>
+<li><a href="../index.html">Overview</a></li>
+<li><a href="../DEPLOY.html">Deploying the site to Vercel</a></li>
+<li><a href="../glossary.html">Glossary — SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">0 · Getting Started</span><ul>
+<li><a href="../00-getting-started/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">1 · AWS Fundamentals</span><ul>
+<li><a href="../01-aws-fundamentals/README.html">Introduction</a></li>
+<li><a href="../01-aws-fundamentals/01-cloud-concepts.html">Cloud Concepts &amp; Global Infrastructure</a></li>
+<li><a href="../01-aws-fundamentals/02-iam.html">IAM: Identity &amp; Access Management</a></li>
+<li><a href="../01-aws-fundamentals/03-vpc-networking.html">VPC &amp; Networking</a></li>
+<li><a href="../01-aws-fundamentals/04-ec2-compute.html" class="active">EC2: Elastic Compute Cloud</a></li>
+<li><a href="../01-aws-fundamentals/05-storage.html">Storage: EBS, EFS, FSx, S3</a></li>
+<li><a href="../01-aws-fundamentals/06-databases.html">Databases on AWS (and where SAP HANA fits)</a></li>
+<li><a href="../01-aws-fundamentals/07-monitoring-and-management.html">Monitoring &amp; Management</a></li>
+<li><a href="../01-aws-fundamentals/08-security.html">Security on AWS</a></li>
+<li><a href="../01-aws-fundamentals/09-resiliency-ha-dr.html">Resiliency: High Availability &amp; Disaster Recovery</a></li>
+<li><a href="../01-aws-fundamentals/10-cost-and-billing.html">Cost &amp; Billing</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">2 · SAP Fundamentals</span><ul>
+<li><a href="../02-sap-fundamentals/README.html">Introduction</a></li>
+<li><a href="../02-sap-fundamentals/01-what-is-sap.html">What is SAP?</a></li>
+<li><a href="../02-sap-fundamentals/02-sap-architecture.html">SAP Architecture (NetWeaver &amp; the 3 tiers)</a></li>
+<li><a href="../02-sap-fundamentals/03-sap-hana.html">SAP HANA</a></li>
+<li><a href="../02-sap-fundamentals/04-s4hana-and-products.html">S/4HANA &amp; the Product Families</a></li>
+<li><a href="../02-sap-fundamentals/05-sap-landscape-and-lifecycle.html">SAP System Landscapes &amp; Lifecycle</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">3 · SAP on AWS</span><ul>
+<li><a href="../03-sap-on-aws/README.html">Introduction</a></li>
+<li><a href="../03-sap-on-aws/01-reference-architecture.html">SAP on AWS Reference Architecture</a></li>
+<li><a href="../03-sap-on-aws/02-compute-and-sizing.html">Compute &amp; Sizing for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/03-storage.html">Storage for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/04-networking.html">Networking for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/05-high-availability-and-dr.html">High Availability &amp; Disaster Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/06-backup-and-recovery.html">Backup &amp; Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/07-migration.html">Migrating SAP to AWS</a></li>
+<li><a href="../03-sap-on-aws/08-automation-launch-wizard.html">Automation: Launch Wizard &amp; Infrastructure as Code</a></li>
+<li><a href="../03-sap-on-aws/09-operations-and-security.html">Operations &amp; Security for SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Labs</span><ul>
+<li><a href="../labs/README.html">Introduction</a></li>
+<li><a href="../labs/lab01-vpc-foundation/README.html">Introduction</a></li>
+<li><a href="../labs/lab02-ec2-bastion/README.html">Introduction</a></li>
+<li><a href="../labs/lab03-hana-host/README.html">Introduction</a></li>
+<li><a href="../labs/lab04-ha-overview/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Automation</span><ul>
+<li><a href="../automation/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Exercises</span><ul>
+<li><a href="../exercises/capstone-solution-sketch.html">Capstone — worked solution sketch</a></li>
+<li><a href="../exercises/quiz-aws-fundamentals.html">Quiz — AWS Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-fundamentals.html">Quiz — SAP Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-on-aws.html">Quiz — SAP on AWS</a></li>
+<li><a href="../exercises/study-plan.html">Study Plan</a></li>
+</ul></div>
+</nav>
+    <div class="sidebar-foot">Educational material · not affiliated with SAP or AWS</div>
+  </aside>
+  <main class="content">
+    <article class="markdown-body">
+      <h1 id="04-ec2-elastic-compute-cloud">04 — EC2: Elastic Compute Cloud</h1>
+<p>EC2 is virtual servers you rent. <strong>Every SAP application server and every SAP HANA /
+AnyDB database server on AWS is an EC2 instance</strong>, so this is core knowledge.</p>
+<h2 id="anatomy-of-an-instance">Anatomy of an instance</h2>
+<ul>
+<li><strong>AMI (Amazon Machine Image)</strong>: the template (OS + preinstalled software) you boot
+  from. For SAP you use SUSE (SLES for SAP) or RHEL for SAP images from the
+  Marketplace — they include SAP-required kernel tuning and support.</li>
+<li><strong>Instance type</strong>: the hardware profile — vCPU, memory, network, storage. Named
+  <code>&lt;family&gt;&lt;generation&gt;&lt;attributes&gt;.&lt;size&gt;</code> e.g. <code>r5.8xlarge</code>, <code>x2idn.16xlarge</code>.</li>
+<li><strong>EBS volumes</strong>: network-attached disks (module 05).</li>
+<li><strong>Key pair</strong>: SSH login (or use SSM Session Manager and skip keys entirely).</li>
+<li><strong>Security group</strong>: the instance firewall.</li>
+<li><strong>User data</strong>: a bootstrap script that runs on first boot.</li>
+</ul>
+<h2 id="instance-families-what-the-letters-mean">Instance families (what the letters mean)</h2>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Optimised for</th>
+<th>SAP relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T</strong> (t3, t4g)</td>
+<td>Burstable, cheap</td>
+<td>Dev/test, bastion, small tools — <strong>not</strong> production HANA</td>
+</tr>
+<tr>
+<td><strong>M</strong> (m5, m6i, m7i)</td>
+<td>Balanced</td>
+<td>SAP app servers, small NetWeaver</td>
+</tr>
+<tr>
+<td><strong>C</strong> (c5, c6i)</td>
+<td>Compute</td>
+<td>Batch, app servers</td>
+</tr>
+<tr>
+<td><strong>R</strong> (r5, r6i, r7i)</td>
+<td><strong>Memory-optimised</strong></td>
+<td><strong>HANA</strong> (memory ≈ data), app servers</td>
+</tr>
+<tr>
+<td><strong>X</strong> (x1e, <strong>x2idn, x2iedn</strong>)</td>
+<td><strong>High memory</strong></td>
+<td><strong>Large HANA</strong> (up to multi-TB RAM)</td>
+</tr>
+<tr>
+<td><strong>U / High Memory</strong> (u-6tb1, u-24tb1…)</td>
+<td><strong>Extreme memory</strong></td>
+<td><strong>Very large HANA / S/4HANA</strong> (3–24+ TB RAM)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>SAP HANA is an <strong>in-memory</strong> database: the whole dataset lives in RAM. So HANA
+instances are chosen mostly by <strong>memory</strong>, and only <strong>SAP-certified</strong> instance types
+are supported. See <code>03-sap-on-aws/02-compute-and-sizing.md</code> and run
+<code>automation/list_sap_certified_instances.py</code>.</p>
+</blockquote>
+<h2 id="purchasing-options-drives-your-sap-bill">Purchasing options (drives your SAP bill)</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Discount</th>
+<th>Commitment</th>
+<th>SAP use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>On-Demand</strong></td>
+<td>0% (baseline)</td>
+<td>None</td>
+<td>Dev/test, spikes, learning</td>
+</tr>
+<tr>
+<td><strong>Savings Plans</strong></td>
+<td>up to ~72%</td>
+<td>1 or 3 yr $/hr commit</td>
+<td><strong>Steady-state production SAP</strong></td>
+</tr>
+<tr>
+<td><strong>Reserved Instances (RI)</strong></td>
+<td>up to ~72%</td>
+<td>1 or 3 yr, specific type</td>
+<td>Older equivalent to Savings Plans</td>
+</tr>
+<tr>
+<td><strong>Spot</strong></td>
+<td>up to ~90%</td>
+<td>Can be reclaimed</td>
+<td>Batch/non-critical only — <strong>never</strong> the DB</td>
+</tr>
+<tr>
+<td><strong>Dedicated Hosts</strong></td>
+<td>—</td>
+<td>Physical server</td>
+<td>BYOL licensing, compliance</td>
+</tr>
+</tbody>
+</table>
+<p>Production SAP runs 24/7, so <strong>Savings Plans / RIs</strong> are essential to control cost.</p>
+<h2 id="placement-tenancy">Placement &amp; tenancy</h2>
+<ul>
+<li><strong>Placement groups</strong>: <code>cluster</code> (low-latency, same AZ), <code>spread</code> (separate
+  hardware), <code>partition</code>. HANA scale-out uses cluster placement for node-to-node speed.</li>
+<li><strong>Tenancy</strong>: shared (default), dedicated instance, dedicated host (BYOL SAP/OS).</li>
+</ul>
+<h2 id="lifecycle-metadata">Lifecycle &amp; metadata</h2>
+<pre><code class="language-bash"># Launch (illustrative — the labs do this via Terraform)
+aws ec2 run-instances --image-id ami-xxxx --instance-type t3.micro \
+  --key-name my-key --security-group-ids sg-xxxx --subnet-id subnet-xxxx
+
+# From inside an instance — IMDSv2 (token-based, enforce this)
+TOKEN=$(curl -s -X PUT &quot;http://169.254.169.254/latest/api/token&quot; \
+  -H &quot;X-aws-ec2-metadata-token-ttl-seconds: 300&quot;)
+curl -s -H &quot;X-aws-ec2-metadata-token: $TOKEN&quot; \
+  http://169.254.169.254/latest/meta-data/instance-type
+</code></pre>
+<h2 id="auto-scaling-load-balancing-for-the-app-tier">Auto Scaling &amp; load balancing (for the app tier)</h2>
+<ul>
+<li><strong>SAP application servers</strong> can scale <strong>horizontally</strong>: add more dialog instances
+  behind an SAP logon group; the AWS pattern is an <strong>Auto Scaling Group</strong> of app
+  servers. (The <strong>database</strong> tier does not auto-scale horizontally — HANA scales up.)</li>
+<li><strong>Elastic Load Balancers</strong>:</li>
+<li><strong>ALB</strong> (Application, layer 7, HTTP/HTTPS) — Fiori/Web Dispatcher front end.</li>
+<li><strong>NLB</strong> (Network, layer 4, TCP) — used in some <strong>SAP HA overlay-IP</strong> designs.</li>
+</ul>
+<h2 id="cost-hygiene-for-the-labs">Cost hygiene for the labs</h2>
+<ul>
+<li>Use <strong><code>t3.micro</code></strong> for anything in phase 1 (Free-Tier-eligible).</li>
+<li><strong>Stop</strong> (not just idle) instances you're not using — you still pay for running
+  instances and attached EBS.</li>
+<li><code>terraform destroy</code> when the lab is done.</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Why are HANA instances almost always from the <strong>R / X / U</strong> families?</li>
+<li>Which purchase option should you <em>never</em> use for a production SAP database, and why?</li>
+<li>What's the difference between <strong>stopping</strong> and <strong>terminating</strong> an instance for cost?</li>
+<li>Which scales horizontally in SAP — the app tier or the DB tier?</li>
+</ol>
+<details><summary>Answers</summary>
+
+1. HANA is in-memory; you pick instances by RAM, and those families offer the highest
+   memory-to-vCPU ratios (and are SAP-certified).
+2. **Spot** — it can be reclaimed with ~2 minutes' notice; losing the DB is catastrophic.
+3. **Stopped**: no compute charge, but you still pay for EBS; can restart. **Terminated**:
+   gone, EBS (unless "delete on termination" off) released.
+4. The **app tier** scales out (more dialog instances). The HANA DB scales **up**.
+</details>
+    </article>
+    <footer class="page-foot">
+      <span>SAP on AWS learning project</span>
+    </footer>
+  </main>
+</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ try{var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+ var tb=document.getElementById('themeBtn');
+ if(tb)tb.addEventListener('click',function(){
+   var cur=root.getAttribute('data-theme');
+   var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+   root.setAttribute('data-theme',next);
+   try{localStorage.setItem('theme',next);}catch(e){}
+ });
+ var mb=document.getElementById('menuBtn'),sb=document.getElementById('sidebar');
+ if(mb&&sb)mb.addEventListener('click',function(){sb.classList.toggle('open');});
+ document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+   a.addEventListener('click',function(){if(sb)sb.classList.remove('open');});
+ });
+})();
+</script>
+</body>
+</html>

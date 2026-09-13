@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 — Cloud Concepts &amp; Global Infrastructure · SAP on AWS — Learning</title>
+<meta name="description" content="A hands-on curriculum for learning SAP on AWS: AWS fundamentals, SAP fundamentals, and SAP-on-AWS architecture, with Terraform labs and Python automation.">
+<style>
+:root{--bg:#ffffff;--fg:#1f2933;--muted:#647084;--border:#e4e8ef;--card:#f7f9fc;
+--accent:#ff9900;--accent2:#232f3e;--link:#0b6bcb;--code-bg:#f2f4f8;--code-fg:#1f2933;
+--sidebar-bg:#fafbfd;--th-bg:#eef1f6;}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e7ebf1;--muted:#98a2b3;--border:#2a3140;
+--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;--link:#6cb6ff;--code-bg:#1c2230;
+--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e7ebf1;
+--muted:#98a2b3;--border:#2a3140;--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;
+--link:#6cb6ff;--code-bg:#1c2230;--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,
+"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+height:54px;padding:0 16px;background:var(--accent2);color:#fff;border-bottom:1px solid var(--border)}
+.brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand span{color:var(--accent);font-weight:700}
+.menu-btn,.theme-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+border-radius:8px;height:34px;min-width:38px;cursor:pointer;font-size:16px}
+.theme-btn{margin-left:auto}
+.menu-btn{display:none}
+.layout{display:flex;align-items:flex-start;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:54px;align-self:flex-start;width:290px;flex:0 0 290px;
+height:calc(100vh - 54px);overflow-y:auto;background:var(--sidebar-bg);
+border-right:1px solid var(--border);padding:18px 14px}
+.nav-section{margin-bottom:16px}
+.nav-section-title{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+color:var(--muted);font-weight:700;margin:0 0 6px 8px}
+.sidebar-nav ul{list-style:none;margin:0;padding:0}
+.sidebar-nav li a{display:block;padding:5px 8px;border-radius:7px;color:var(--fg);font-size:13.5px}
+.sidebar-nav li a:hover{background:var(--card);text-decoration:none}
+.sidebar-nav li a.active{background:var(--accent);color:#231f00;font-weight:600}
+.sidebar-foot{margin-top:20px;padding:10px 8px 0;border-top:1px solid var(--border);
+color:var(--muted);font-size:11.5px}
+.content{flex:1 1 auto;min-width:0;padding:28px 34px 60px}
+.markdown-body{max-width:820px}
+.markdown-body h1{font-size:30px;line-height:1.2;margin:.2em 0 .6em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.markdown-body h2{font-size:22px;margin:1.6em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.markdown-body h3{font-size:17px;margin:1.3em 0 .4em}
+.markdown-body p,.markdown-body li{color:var(--fg)}
+.markdown-body code{background:var(--code-bg);color:var(--code-fg);padding:.15em .4em;
+border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.markdown-body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+padding:14px 16px;overflow-x:auto}
+.markdown-body pre code{background:transparent;padding:0;font-size:13px;line-height:1.55}
+.markdown-body blockquote{margin:1em 0;padding:.5em 1em;border-left:4px solid var(--accent);
+background:var(--card);border-radius:0 8px 8px 0;color:var(--fg)}
+.markdown-body table{border-collapse:collapse;width:100%;margin:1.1em 0;display:block;overflow-x:auto}
+.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:8px 11px;text-align:left;font-size:13.5px}
+.markdown-body th{background:var(--th-bg);font-weight:700}
+.markdown-body details{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:10px 14px;margin:1em 0}
+.markdown-body summary{cursor:pointer;font-weight:600}
+.markdown-body hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.markdown-body img{max-width:100%}
+.page-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--muted);font-size:12.5px}
+@media (max-width:860px){
+ .menu-btn{display:inline-block}
+ .sidebar{position:fixed;top:54px;left:0;z-index:15;transform:translateX(-100%);
+  transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .sidebar.open{transform:translateX(0)}
+ .content{padding:20px 18px 50px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+  <a class="brand" href="../index.html">SAP&nbsp;on&nbsp;AWS <span>Learning</span></a>
+  <button id="themeBtn" class="theme-btn" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+<div class="nav-section"><span class="nav-section-title">Overview</span><ul>
+<li><a href="../index.html">Overview</a></li>
+<li><a href="../DEPLOY.html">Deploying the site to Vercel</a></li>
+<li><a href="../glossary.html">Glossary — SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">0 · Getting Started</span><ul>
+<li><a href="../00-getting-started/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">1 · AWS Fundamentals</span><ul>
+<li><a href="../01-aws-fundamentals/README.html">Introduction</a></li>
+<li><a href="../01-aws-fundamentals/01-cloud-concepts.html" class="active">Cloud Concepts &amp; Global Infrastructure</a></li>
+<li><a href="../01-aws-fundamentals/02-iam.html">IAM: Identity &amp; Access Management</a></li>
+<li><a href="../01-aws-fundamentals/03-vpc-networking.html">VPC &amp; Networking</a></li>
+<li><a href="../01-aws-fundamentals/04-ec2-compute.html">EC2: Elastic Compute Cloud</a></li>
+<li><a href="../01-aws-fundamentals/05-storage.html">Storage: EBS, EFS, FSx, S3</a></li>
+<li><a href="../01-aws-fundamentals/06-databases.html">Databases on AWS (and where SAP HANA fits)</a></li>
+<li><a href="../01-aws-fundamentals/07-monitoring-and-management.html">Monitoring &amp; Management</a></li>
+<li><a href="../01-aws-fundamentals/08-security.html">Security on AWS</a></li>
+<li><a href="../01-aws-fundamentals/09-resiliency-ha-dr.html">Resiliency: High Availability &amp; Disaster Recovery</a></li>
+<li><a href="../01-aws-fundamentals/10-cost-and-billing.html">Cost &amp; Billing</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">2 · SAP Fundamentals</span><ul>
+<li><a href="../02-sap-fundamentals/README.html">Introduction</a></li>
+<li><a href="../02-sap-fundamentals/01-what-is-sap.html">What is SAP?</a></li>
+<li><a href="../02-sap-fundamentals/02-sap-architecture.html">SAP Architecture (NetWeaver &amp; the 3 tiers)</a></li>
+<li><a href="../02-sap-fundamentals/03-sap-hana.html">SAP HANA</a></li>
+<li><a href="../02-sap-fundamentals/04-s4hana-and-products.html">S/4HANA &amp; the Product Families</a></li>
+<li><a href="../02-sap-fundamentals/05-sap-landscape-and-lifecycle.html">SAP System Landscapes &amp; Lifecycle</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">3 · SAP on AWS</span><ul>
+<li><a href="../03-sap-on-aws/README.html">Introduction</a></li>
+<li><a href="../03-sap-on-aws/01-reference-architecture.html">SAP on AWS Reference Architecture</a></li>
+<li><a href="../03-sap-on-aws/02-compute-and-sizing.html">Compute &amp; Sizing for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/03-storage.html">Storage for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/04-networking.html">Networking for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/05-high-availability-and-dr.html">High Availability &amp; Disaster Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/06-backup-and-recovery.html">Backup &amp; Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/07-migration.html">Migrating SAP to AWS</a></li>
+<li><a href="../03-sap-on-aws/08-automation-launch-wizard.html">Automation: Launch Wizard &amp; Infrastructure as Code</a></li>
+<li><a href="../03-sap-on-aws/09-operations-and-security.html">Operations &amp; Security for SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Labs</span><ul>
+<li><a href="../labs/README.html">Introduction</a></li>
+<li><a href="../labs/lab01-vpc-foundation/README.html">Introduction</a></li>
+<li><a href="../labs/lab02-ec2-bastion/README.html">Introduction</a></li>
+<li><a href="../labs/lab03-hana-host/README.html">Introduction</a></li>
+<li><a href="../labs/lab04-ha-overview/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Automation</span><ul>
+<li><a href="../automation/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Exercises</span><ul>
+<li><a href="../exercises/capstone-solution-sketch.html">Capstone — worked solution sketch</a></li>
+<li><a href="../exercises/quiz-aws-fundamentals.html">Quiz — AWS Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-fundamentals.html">Quiz — SAP Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-on-aws.html">Quiz — SAP on AWS</a></li>
+<li><a href="../exercises/study-plan.html">Study Plan</a></li>
+</ul></div>
+</nav>
+    <div class="sidebar-foot">Educational material · not affiliated with SAP or AWS</div>
+  </aside>
+  <main class="content">
+    <article class="markdown-body">
+      <h1 id="01-cloud-concepts-global-infrastructure">01 — Cloud Concepts &amp; Global Infrastructure</h1>
+<h2 id="what-is-cloud-computing">What is cloud computing?</h2>
+<p>On-demand delivery of IT resources (compute, storage, database, networking) over the
+internet with <strong>pay-as-you-go</strong> pricing. Instead of buying servers, you rent them.</p>
+<p>Three service models:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>You manage</th>
+<th>AWS manages</th>
+<th>SAP example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IaaS</strong> (Infrastructure)</td>
+<td>OS, app, data</td>
+<td>Hardware, virtualisation</td>
+<td><strong>SAP on EC2</strong> (you install HANA)</td>
+</tr>
+<tr>
+<td><strong>PaaS</strong> (Platform)</td>
+<td>App, data</td>
+<td>OS, runtime</td>
+<td>RDS, Elastic Beanstalk</td>
+</tr>
+<tr>
+<td><strong>SaaS</strong> (Software)</td>
+<td>Just use it</td>
+<td>Everything</td>
+<td>SAP SuccessFactors, Ariba (SAP-run)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Nearly all "SAP on AWS" (S/4HANA, ECC, BW) is <strong>IaaS on EC2</strong> — because SAP
+certifies specific OS + instance combinations and you run the SAP kernel yourself.
+<strong>RISE with SAP</strong> is closer to a managed/SaaS-ish model, but the underlying compute
+can still be AWS.</p>
+</blockquote>
+<h2 id="the-6-advantages-of-cloud-awss-own-list">The 6 advantages of cloud (AWS's own list)</h2>
+<ol>
+<li>Trade <strong>capital expense for variable expense</strong> (rent vs buy).</li>
+<li>Benefit from <strong>massive economies of scale</strong>.</li>
+<li>Stop <strong>guessing capacity</strong> — scale up/down on demand.</li>
+<li>Increase <strong>speed and agility</strong> — minutes not months.</li>
+<li>Stop spending on <strong>running data centres</strong>.</li>
+<li>Go <strong>global in minutes</strong>.</li>
+</ol>
+<h2 id="global-infrastructure">Global infrastructure</h2>
+<h3 id="regions">Regions</h3>
+<p>A <strong>Region</strong> is a physical location in the world (e.g. <code>eu-central-1</code> = Frankfurt,
+<code>us-east-1</code> = N. Virginia). Regions are <strong>isolated</strong> from each other by design. You
+choose a Region based on:</p>
+<ul>
+<li><strong>Latency</strong> to your users.</li>
+<li><strong>Data sovereignty / compliance</strong> (GDPR → keep EU data in EU).</li>
+<li><strong>Service &amp; instance availability</strong> (not all SAP-certified instances exist everywhere).</li>
+<li><strong>Cost</strong> (prices vary by Region).</li>
+</ul>
+<h3 id="availability-zones-azs">Availability Zones (AZs)</h3>
+<p>Each Region has <strong>≥ 3 AZs</strong> (named <code>eu-central-1a</code>, <code>-1b</code>, <code>-1c</code>). An AZ is one or
+more discrete data centres with independent power, cooling, and networking, but
+connected to sibling AZs by <strong>low-latency (&lt;~1–2 ms), high-bandwidth</strong> links.</p>
+<blockquote>
+<p><strong>This is the single most important concept for SAP HA.</strong> You put the primary SAP
+DB in AZ-a and the standby in AZ-b. If a whole data centre fails, the other AZ keeps
+running. Synchronous HANA System Replication across two AZs is the standard HA pattern.</p>
+</blockquote>
+<h3 id="edge-locations-local-zones">Edge locations &amp; Local Zones</h3>
+<ul>
+<li><strong>Edge locations</strong>: 400+ sites for CloudFront (CDN), Route 53 DNS, low-latency delivery.</li>
+<li><strong>Local Zones / Wavelength</strong>: place compute physically closer to end users/5G.</li>
+<li><strong>Outposts</strong>: AWS hardware in <em>your</em> data centre (used for SAP when latency to
+  on-prem factory floor matters, or for data-residency).</li>
+</ul>
+<h2 id="availability-math-you-must-know">Availability math you must know</h2>
+<table>
+<thead>
+<tr>
+<th>"Nines"</th>
+<th>Uptime</th>
+<th>Downtime/year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>99% (two nines)</td>
+<td></td>
+<td>~3.65 days</td>
+</tr>
+<tr>
+<td>99.9% (three nines)</td>
+<td></td>
+<td>~8.76 hours</td>
+</tr>
+<tr>
+<td>99.95%</td>
+<td></td>
+<td>~4.38 hours</td>
+</tr>
+<tr>
+<td>99.99% (four nines)</td>
+<td></td>
+<td>~52 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Single-AZ EC2 alone will not give you four nines for SAP — you need multi-AZ HA
+(covered in module 09 and <code>03-sap-on-aws/05-high-availability-and-dr.md</code>).</p>
+<h2 id="key-terms">Key terms</h2>
+<ul>
+<li><strong>Fault tolerance</strong>: keep running with <em>no</em> interruption when a component fails.</li>
+<li><strong>High availability (HA)</strong>: recover <em>quickly</em> (seconds/minutes) after a failure.</li>
+<li><strong>Disaster recovery (DR)</strong>: recover after a <em>Region-wide</em> event, measured by:</li>
+<li><strong>RPO</strong> (Recovery Point Objective) — how much <em>data</em> you can afford to lose (time).</li>
+<li><strong>RTO</strong> (Recovery Time Objective) — how <em>long</em> recovery may take.</li>
+<li><strong>Elasticity</strong>: scale resources with demand.</li>
+<li><strong>Scalability</strong>: <strong>vertical</strong> (bigger instance) vs <strong>horizontal</strong> (more instances).</li>
+<li>SAP HANA scales <strong>up</strong> (vertical) primarily; SAP app servers scale <strong>out</strong> (horizontal).</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Why can't two servers in the same AZ protect you from a data-centre fire?</li>
+<li>Your SAP users are in Germany but the system is in <code>us-east-1</code>. Name two problems.</li>
+<li>What's the difference between RPO and RTO? Which one does HANA System Replication
+   in <strong>sync</strong> mode drive toward zero?</li>
+</ol>
+<details><summary>Answers</summary>
+
+1. One AZ can be a single data centre; a fire takes both down. Spread across AZs.
+2. Latency (slow SAP GUI/Fiori) and potential GDPR/data-residency compliance issues.
+3. RPO = data loss, RTO = time to recover. **Sync** HANA System Replication drives
+   **RPO → 0** (every committed transaction is on the secondary before commit).
+</details>
+    </article>
+    <footer class="page-foot">
+      <span>SAP on AWS learning project</span>
+    </footer>
+  </main>
+</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ try{var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+ var tb=document.getElementById('themeBtn');
+ if(tb)tb.addEventListener('click',function(){
+   var cur=root.getAttribute('data-theme');
+   var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+   root.setAttribute('data-theme',next);
+   try{localStorage.setItem('theme',next);}catch(e){}
+ });
+ var mb=document.getElementById('menuBtn'),sb=document.getElementById('sidebar');
+ if(mb&&sb)mb.addEventListener('click',function(){sb.classList.toggle('open');});
+ document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+   a.addEventListener('click',function(){if(sb)sb.classList.remove('open');});
+ });
+})();
+</script>
+</body>
+</html>
