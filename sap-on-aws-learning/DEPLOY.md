@@ -12,7 +12,15 @@ required on Vercel** — so Vercel just serves the pre-built `public/` folder.
 > ⚠️ Deploying to Vercel requires **your** Vercel account login, which I can't do for
 > you from here. Pick one of the two paths below — both take about a minute.
 
-## Option A — Import the Git repo (recommended, gives auto-deploys)
+## Option A — One-click button (fastest)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fredskul%2FPython_proj%2Ftree%2Fclaude%2Ffunny-bell-wike7b%2Fsap-on-aws-learning)
+
+The button opens Vercel's import flow pointed at the `sap-on-aws-learning` subfolder of
+this branch. Log in, confirm, and Deploy. (If the button doesn't pre-fill the root
+directory, set **Root Directory = `sap-on-aws-learning`** as in Option B.)
+
+## Option B — Import the Git repo manually (gives auto-deploys)
 
 1. Push this branch (already done): `redskul/Python_proj @ claude/funny-bell-wike7b`.
 2. Go to <https://vercel.com/new> and **Import** the `redskul/Python_proj` repository.
@@ -25,7 +33,7 @@ required on Vercel** — so Vercel just serves the pre-built `public/` folder.
 
 Every push to the branch will then redeploy automatically.
 
-## Option B — Deploy from your machine with the Vercel CLI
+## Option C — Deploy from your machine with the Vercel CLI
 
 ```bash
 npm i -g vercel                       # once

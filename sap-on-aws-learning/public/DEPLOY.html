@@ -157,7 +157,12 @@ required on Vercel</strong> — so Vercel just serves the pre-built <code>public
 <p>⚠️ Deploying to Vercel requires <strong>your</strong> Vercel account login, which I can't do for
 you from here. Pick one of the two paths below — both take about a minute.</p>
 </blockquote>
-<h2 id="option-a-import-the-git-repo-recommended-gives-auto-deploys">Option A — Import the Git repo (recommended, gives auto-deploys)</h2>
+<h2 id="option-a-one-click-button-fastest">Option A — One-click button (fastest)</h2>
+<p><a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fredskul%2FPython_proj%2Ftree%2Fclaude%2Ffunny-bell-wike7b%2Fsap-on-aws-learning"><img alt="Deploy with Vercel" src="https://vercel.com/button" /></a></p>
+<p>The button opens Vercel's import flow pointed at the <code>sap-on-aws-learning</code> subfolder of
+this branch. Log in, confirm, and Deploy. (If the button doesn't pre-fill the root
+directory, set <strong>Root Directory = <code>sap-on-aws-learning</code></strong> as in Option B.)</p>
+<h2 id="option-b-import-the-git-repo-manually-gives-auto-deploys">Option B — Import the Git repo manually (gives auto-deploys)</h2>
 <ol>
 <li>Push this branch (already done): <code>redskul/Python_proj @ claude/funny-bell-wike7b</code>.</li>
 <li>Go to <a href="https://vercel.com/new">https://vercel.com/new</a> and <strong>Import</strong> the <code>redskul/Python_proj</code> repository.</li>
@@ -169,7 +174,7 @@ you from here. Pick one of the two paths below — both take about a minute.</p>
 <li>Click <strong>Deploy</strong>. You'll get a URL like <code>https://your-project.vercel.app</code>.</li>
 </ol>
 <p>Every push to the branch will then redeploy automatically.</p>
-<h2 id="option-b-deploy-from-your-machine-with-the-vercel-cli">Option B — Deploy from your machine with the Vercel CLI</h2>
+<h2 id="option-c-deploy-from-your-machine-with-the-vercel-cli">Option C — Deploy from your machine with the Vercel CLI</h2>
 <pre><code class="language-bash">npm i -g vercel                       # once
 git clone https://github.com/redskul/Python_proj
 cd Python_proj/sap-on-aws-learning     # the vercel.json lives here

@@ -7,8 +7,13 @@ SAP fundamentals, and finally the specialised knowledge that maps to the
 **AWS Certified: SAP on AWS – Specialty (PAS-C01)** exam.
 
 > 🌐 **Read it as a website:** the whole curriculum renders to a static site (sidebar
-> nav, light/dark theme) that deploys to **Vercel** with no build step. See
-> [`DEPLOY.md`](DEPLOY.md). Regenerate locally with `pip install markdown && python site/build.py`.
+> nav, light/dark theme) that deploys to **Vercel** with no build step. One-click deploy
+> (imports this folder with the right settings pre-filled):
+>
+> [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fredskul%2FPython_proj%2Ftree%2Fclaude%2Ffunny-bell-wike7b%2Fsap-on-aws-learning)
+>
+> Details and the CLI path are in [`DEPLOY.md`](DEPLOY.md). Regenerate locally with
+> `pip install markdown && python site/build.py`.
 
 > This is a **learning** repo. It mixes reading material, quizzes, runnable Python
 > (boto3) automation, and Infrastructure-as-Code (Terraform) labs. Everything is
