@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 — Backup &amp; Recovery for SAP on AWS · SAP on AWS — Learning</title>
+<meta name="description" content="A hands-on curriculum for learning SAP on AWS: AWS fundamentals, SAP fundamentals, and SAP-on-AWS architecture, with Terraform labs and Python automation.">
+<style>
+:root{--bg:#ffffff;--fg:#1f2933;--muted:#647084;--border:#e4e8ef;--card:#f7f9fc;
+--accent:#ff9900;--accent2:#232f3e;--link:#0b6bcb;--code-bg:#f2f4f8;--code-fg:#1f2933;
+--sidebar-bg:#fafbfd;--th-bg:#eef1f6;}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e7ebf1;--muted:#98a2b3;--border:#2a3140;
+--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;--link:#6cb6ff;--code-bg:#1c2230;
+--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e7ebf1;
+--muted:#98a2b3;--border:#2a3140;--card:#1a2029;--accent:#ff9900;--accent2:#0d1117;
+--link:#6cb6ff;--code-bg:#1c2230;--code-fg:#e7ebf1;--sidebar-bg:#151a22;--th-bg:#1c2230;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,
+"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+height:54px;padding:0 16px;background:var(--accent2);color:#fff;border-bottom:1px solid var(--border)}
+.brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand span{color:var(--accent);font-weight:700}
+.menu-btn,.theme-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+border-radius:8px;height:34px;min-width:38px;cursor:pointer;font-size:16px}
+.theme-btn{margin-left:auto}
+.menu-btn{display:none}
+.layout{display:flex;align-items:flex-start;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:54px;align-self:flex-start;width:290px;flex:0 0 290px;
+height:calc(100vh - 54px);overflow-y:auto;background:var(--sidebar-bg);
+border-right:1px solid var(--border);padding:18px 14px}
+.nav-section{margin-bottom:16px}
+.nav-section-title{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+color:var(--muted);font-weight:700;margin:0 0 6px 8px}
+.sidebar-nav ul{list-style:none;margin:0;padding:0}
+.sidebar-nav li a{display:block;padding:5px 8px;border-radius:7px;color:var(--fg);font-size:13.5px}
+.sidebar-nav li a:hover{background:var(--card);text-decoration:none}
+.sidebar-nav li a.active{background:var(--accent);color:#231f00;font-weight:600}
+.sidebar-foot{margin-top:20px;padding:10px 8px 0;border-top:1px solid var(--border);
+color:var(--muted);font-size:11.5px}
+.content{flex:1 1 auto;min-width:0;padding:28px 34px 60px}
+.markdown-body{max-width:820px}
+.markdown-body h1{font-size:30px;line-height:1.2;margin:.2em 0 .6em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.markdown-body h2{font-size:22px;margin:1.6em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.markdown-body h3{font-size:17px;margin:1.3em 0 .4em}
+.markdown-body p,.markdown-body li{color:var(--fg)}
+.markdown-body code{background:var(--code-bg);color:var(--code-fg);padding:.15em .4em;
+border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.markdown-body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+padding:14px 16px;overflow-x:auto}
+.markdown-body pre code{background:transparent;padding:0;font-size:13px;line-height:1.55}
+.markdown-body blockquote{margin:1em 0;padding:.5em 1em;border-left:4px solid var(--accent);
+background:var(--card);border-radius:0 8px 8px 0;color:var(--fg)}
+.markdown-body table{border-collapse:collapse;width:100%;margin:1.1em 0;display:block;overflow-x:auto}
+.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:8px 11px;text-align:left;font-size:13.5px}
+.markdown-body th{background:var(--th-bg);font-weight:700}
+.markdown-body details{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:10px 14px;margin:1em 0}
+.markdown-body summary{cursor:pointer;font-weight:600}
+.markdown-body hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.markdown-body img{max-width:100%}
+.page-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--muted);font-size:12.5px}
+@media (max-width:860px){
+ .menu-btn{display:inline-block}
+ .sidebar{position:fixed;top:54px;left:0;z-index:15;transform:translateX(-100%);
+  transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .sidebar.open{transform:translateX(0)}
+ .content{padding:20px 18px 50px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+  <a class="brand" href="../index.html">SAP&nbsp;on&nbsp;AWS <span>Learning</span></a>
+  <button id="themeBtn" class="theme-btn" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+<div class="nav-section"><span class="nav-section-title">Overview</span><ul>
+<li><a href="../index.html">Overview</a></li>
+<li><a href="../DEPLOY.html">Deploying the site to Vercel</a></li>
+<li><a href="../glossary.html">Glossary — SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">0 · Getting Started</span><ul>
+<li><a href="../00-getting-started/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">1 · AWS Fundamentals</span><ul>
+<li><a href="../01-aws-fundamentals/README.html">Introduction</a></li>
+<li><a href="../01-aws-fundamentals/01-cloud-concepts.html">Cloud Concepts &amp; Global Infrastructure</a></li>
+<li><a href="../01-aws-fundamentals/02-iam.html">IAM: Identity &amp; Access Management</a></li>
+<li><a href="../01-aws-fundamentals/03-vpc-networking.html">VPC &amp; Networking</a></li>
+<li><a href="../01-aws-fundamentals/04-ec2-compute.html">EC2: Elastic Compute Cloud</a></li>
+<li><a href="../01-aws-fundamentals/05-storage.html">Storage: EBS, EFS, FSx, S3</a></li>
+<li><a href="../01-aws-fundamentals/06-databases.html">Databases on AWS (and where SAP HANA fits)</a></li>
+<li><a href="../01-aws-fundamentals/07-monitoring-and-management.html">Monitoring &amp; Management</a></li>
+<li><a href="../01-aws-fundamentals/08-security.html">Security on AWS</a></li>
+<li><a href="../01-aws-fundamentals/09-resiliency-ha-dr.html">Resiliency: High Availability &amp; Disaster Recovery</a></li>
+<li><a href="../01-aws-fundamentals/10-cost-and-billing.html">Cost &amp; Billing</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">2 · SAP Fundamentals</span><ul>
+<li><a href="../02-sap-fundamentals/README.html">Introduction</a></li>
+<li><a href="../02-sap-fundamentals/01-what-is-sap.html">What is SAP?</a></li>
+<li><a href="../02-sap-fundamentals/02-sap-architecture.html">SAP Architecture (NetWeaver &amp; the 3 tiers)</a></li>
+<li><a href="../02-sap-fundamentals/03-sap-hana.html">SAP HANA</a></li>
+<li><a href="../02-sap-fundamentals/04-s4hana-and-products.html">S/4HANA &amp; the Product Families</a></li>
+<li><a href="../02-sap-fundamentals/05-sap-landscape-and-lifecycle.html">SAP System Landscapes &amp; Lifecycle</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">3 · SAP on AWS</span><ul>
+<li><a href="../03-sap-on-aws/README.html">Introduction</a></li>
+<li><a href="../03-sap-on-aws/01-reference-architecture.html">SAP on AWS Reference Architecture</a></li>
+<li><a href="../03-sap-on-aws/02-compute-and-sizing.html">Compute &amp; Sizing for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/03-storage.html">Storage for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/04-networking.html">Networking for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/05-high-availability-and-dr.html">High Availability &amp; Disaster Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/06-backup-and-recovery.html" class="active">Backup &amp; Recovery for SAP on AWS</a></li>
+<li><a href="../03-sap-on-aws/07-migration.html">Migrating SAP to AWS</a></li>
+<li><a href="../03-sap-on-aws/08-automation-launch-wizard.html">Automation: Launch Wizard &amp; Infrastructure as Code</a></li>
+<li><a href="../03-sap-on-aws/09-operations-and-security.html">Operations &amp; Security for SAP on AWS</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Labs</span><ul>
+<li><a href="../labs/README.html">Introduction</a></li>
+<li><a href="../labs/lab01-vpc-foundation/README.html">Introduction</a></li>
+<li><a href="../labs/lab02-ec2-bastion/README.html">Introduction</a></li>
+<li><a href="../labs/lab03-hana-host/README.html">Introduction</a></li>
+<li><a href="../labs/lab04-ha-overview/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Automation</span><ul>
+<li><a href="../automation/README.html">Introduction</a></li>
+</ul></div>
+<div class="nav-section"><span class="nav-section-title">Exercises</span><ul>
+<li><a href="../exercises/capstone-solution-sketch.html">Capstone — worked solution sketch</a></li>
+<li><a href="../exercises/quiz-aws-fundamentals.html">Quiz — AWS Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-fundamentals.html">Quiz — SAP Fundamentals</a></li>
+<li><a href="../exercises/quiz-sap-on-aws.html">Quiz — SAP on AWS</a></li>
+<li><a href="../exercises/study-plan.html">Study Plan</a></li>
+</ul></div>
+</nav>
+    <div class="sidebar-foot">Educational material · not affiliated with SAP or AWS</div>
+  </aside>
+  <main class="content">
+    <article class="markdown-body">
+      <h1 id="06-backup-recovery-for-sap-on-aws">06 — Backup &amp; Recovery for SAP on AWS</h1>
+<p>HA protects against failure; <strong>backups protect against corruption, mistakes, and
+ransomware</strong> — and are the floor of your DR plan. HANA has its own backup framework;
+AWS integrates with it.</p>
+<h2 id="hana-backup-concepts-recap">HANA backup concepts (recap)</h2>
+<ul>
+<li><strong>Complete data backup</strong>: full copy of the HANA data.</li>
+<li><strong>Delta backups</strong>: incremental/differential since the last full.</li>
+<li><strong>Log backups</strong>: frequent, bound your <strong>RPO</strong> (e.g. every 5–15 min). Without log
+  backups you can only recover to the last data backup.</li>
+<li><strong>Backup catalog</strong>: HANA's index of what backups exist (needed for recovery).</li>
+</ul>
+<h2 id="option-a-aws-backint-agent-for-sap-hana-the-aws-native-path">Option A — AWS Backint Agent for SAP HANA (the AWS-native path)</h2>
+<p><strong>Backint</strong> is SAP's backup API. The <strong>AWS Backint Agent for SAP HANA</strong> implements it so
+HANA writes backups <strong>directly to S3</strong>:</p>
+<pre><code>HANA (backup command / scheduled) ──Backint──▶ AWS Backint Agent ──▶ S3 bucket
+                                                        │
+                                              IAM role + KMS (CMK)
+</code></pre>
+<ul>
+<li>Configure once; then HANA <code>BACKUP DATA USING BACKINT</code> and log backups stream to S3.</li>
+<li><strong>No large local backup volume needed</strong> — backups go straight to durable, cheap S3.</li>
+<li>Secured by the host's <strong>IAM role</strong> (write to the bucket) + <strong>KMS CMK</strong> (encryption).</li>
+<li><strong>Lifecycle</strong> the bucket: S3 Standard → Glacier / Deep Archive for long retention.</li>
+<li><strong>Cross-Region replication</strong> of the bucket for DR of the backups themselves.</li>
+</ul>
+<h2 id="option-b-ebs-storage-snapshots">Option B — EBS / storage snapshots</h2>
+<ul>
+<li>Quiesce HANA to create a <strong>storage snapshot</strong> (<code>hdbnsutil -createStorageSnapshot</code> /
+  backup catalog entry), then take <strong>EBS snapshots</strong> of the data volumes.</li>
+<li>Very fast for <strong>large</strong> databases (snapshot vs streaming a multi-TB backup).</li>
+<li>Snapshots are incremental and stored in S3; copy <strong>cross-Region</strong> for DR.</li>
+</ul>
+<h2 id="option-c-aws-backup-systems-manager-for-sap">Option C — AWS Backup + Systems Manager for SAP</h2>
+<ul>
+<li><strong>AWS Systems Manager for SAP</strong> can register HANA databases and integrate with <strong>AWS
+  Backup</strong> to orchestrate HANA (Backint) backups centrally with policies, retention, and
+  cross-Region copy — a managed, auditable backup workflow across the landscape.</li>
+<li><strong>AWS Backup</strong> also protects the <em>infrastructure</em> layer (non-DB EBS, EFS, FSx).</li>
+</ul>
+<h2 id="anydb-backups">AnyDB backups</h2>
+<p>For Oracle/Db2/SQL Server/ASE under SAP, use the DB's native backup tool writing to
+S3 (via agents/S3 mounts) or AWS Backup where supported — same principles: off-instance,
+encrypted, lifecycle, cross-Region.</p>
+<h2 id="designing-to-an-rporto">Designing to an RPO/RTO</h2>
+<table>
+<thead>
+<tr>
+<th>Business need</th>
+<th>Backup design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RPO 15 min</td>
+<td>Log backups every ≤ 15 min to S3 (Backint)</td>
+</tr>
+<tr>
+<td>Fast restore of huge DB</td>
+<td>Storage/EBS snapshots + log backups</td>
+</tr>
+<tr>
+<td>Long retention (7 yr)</td>
+<td>S3 lifecycle → Glacier Deep Archive, Object Lock (WORM)</td>
+</tr>
+<tr>
+<td>Ransomware resilience</td>
+<td>Object Lock + separate account + cross-Region copy</td>
+</tr>
+<tr>
+<td>Regional DR</td>
+<td>Cross-Region backup copy <strong>and</strong> HSR async</td>
+</tr>
+</tbody>
+</table>
+<h2 id="recovery-practise-it">Recovery — practise it</h2>
+<ol>
+<li>Provision/identify target host.</li>
+<li>Recover the <strong>data backup</strong> (Backint from S3 or snapshot restore).</li>
+<li>Replay <strong>log backups</strong> to the desired point in time.</li>
+<li>Validate the backup <strong>catalog</strong> and consistency.</li>
+<li><strong>Test regularly</strong> — a backup you've never restored is a guess.</li>
+</ol>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Without <strong>log backups</strong>, what's the best recovery point you can achieve?</li>
+<li>How does the <strong>AWS Backint Agent</strong> change where HANA backups are stored, and how is
+   that access secured?</li>
+<li>When are <strong>storage/EBS snapshots</strong> preferable to a streamed Backint backup?</li>
+<li>Name two techniques that make S3-stored SAP backups ransomware-resilient.</li>
+</ol>
+<details><summary>Answers</summary>
+
+1. Only the **last data backup** — no point-in-time replay is possible.
+2. Backups stream **directly to S3** (no big local backup disk), secured by the host's
+   **IAM role** + **KMS CMK** encryption.
+3. For **very large** databases where streaming a full backup is too slow — snapshots
+   are near-instant and incremental.
+4. **S3 Object Lock (WORM)** + **cross-Region copy** (and isolating backups in a
+   separate account) so backups can't be altered/deleted or lost with the primary.
+</details>
+    </article>
+    <footer class="page-foot">
+      <span>SAP on AWS learning project</span>
+    </footer>
+  </main>
+</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ try{var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+ var tb=document.getElementById('themeBtn');
+ if(tb)tb.addEventListener('click',function(){
+   var cur=root.getAttribute('data-theme');
+   var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+   root.setAttribute('data-theme',next);
+   try{localStorage.setItem('theme',next);}catch(e){}
+ });
+ var mb=document.getElementById('menuBtn'),sb=document.getElementById('sidebar');
+ if(mb&&sb)mb.addEventListener('click',function(){sb.classList.toggle('open');});
+ document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+   a.addEventListener('click',function(){if(sb)sb.classList.remove('open');});
+ });
+})();
+</script>
+</body>
+</html>
